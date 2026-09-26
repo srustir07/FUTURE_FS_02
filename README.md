@@ -19,5 +19,4 @@ A professional, responsive Mini CRM (Lead Management System) built for tracking 
 Check out the live deployed project here: 
 [https://srustir07.github.io/FUTURE_FS_02/](https://srustir07.github.io/FUTURE_FS_02/)
 
-## 📸 Preview
-![CRM Preview](preview-placeholder.png)
+
