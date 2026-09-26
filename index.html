@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BizFlow Enterprise CRM</title>
+    <link rel="stylesheet" href="style.css">
+    <!-- FontAwesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Chart.js for Graphs -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+
+    <div class="app-container">
+        <!-- Sidebar Navigation -->
+        <aside class="sidebar">
+            <div class="brand">
+                <i class="fa-solid fa-cube glow-icon"></i>
+                <h2>BizFlow<span class="dot">.</span></h2>
+            </div>
+            <ul class="nav-menu">
+                <li class="active" onclick="switchTab('dashboard', event)"><a href="#"><i class="fa-solid fa-chart-pie"></i> Dashboard & Leads</a></li>
+                <li onclick="switchTab('analytics', event)"><a href="#"><i class="fa-solid fa-chart-line"></i> Visual Analytics</a></li>
+                <li onclick="switchTab('services', event)"><a href="#"><i class="fa-solid fa-briefcase"></i> Service Catalog</a></li>
+            </ul>
+            <div class="sidebar-footer">
+                <div class="user-badge">
+                    <i class="fa-solid fa-circle-user"></i>
+                    <div>
+                        <p class="uname">Enterprise Admin</p>
+                        <p class="urol">Full-Stack Track</p>
+                    </div>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Main Content Area -->
+        <main class="main-content">
+            <header>
+                <div>
+                    <h1 id="pageTitle">Enterprise Pipeline</h1>
+                    <p class="subtitle">Manage client acquisition, track service deals, and view deep analytics.</p>
+                </div>
+                <div class="header-actions">
+                    <button class="btn-secondary" onclick="exportToCSV()"><i class="fa-solid fa-file-arrow-down"></i> Export CSV</button>
+                    <button class="btn-primary" onclick="openModal()"><i class="fa-solid fa-plus"></i> New Business Lead</button>
+                </div>
+            </header>
+
+            <!-- TAB 1: DASHBOARD & LEADS -->
+            <div id="dashboardTab" class="tab-content active">
+                <!-- Statistics Cards -->
+                <div class="stats-grid">
+                    <div class="card card-blue">
+                        <div class="card-icon"><i class="fa-solid fa-users"></i></div>
+                        <div>
+                            <h3>Total Pipeline Leads</h3>
+                            <p id="totalCount">0</p>
+                        </div>
+                    </div>
+                    <div class="card card-amber">
+                        <div class="card-icon"><i class="fa-solid fa-indian-rupee-sign"></i></div>
+                        <div>
+                            <h3>Potential Deal Value</h3>
+                            <p id="totalValue">₹0</p>
+                        </div>
+                    </div>
+                    <div class="card card-emerald">
+                        <div class="card-icon"><i class="fa-solid fa-circle-check"></i></div>
+                        <div>
+                            <h3>Converted Clients</h3>
+                            <p id="convertedCount">0</p>
+                        </div>
+                    </div>
+                    <div class="card card-violet">
+                        <div class="card-icon"><i class="fa-solid fa-percent"></i></div>
+                        <div>
+                            <h3>Conversion Rate</h3>
+                            <p id="conversionRate">0%</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Controls: Search and Filters -->
+                <div class="controls-bar">
+                    <div class="search-box">
+                        <i class="fa-solid fa-magnifying-glass"></i>
+                        <input type="text" id="searchInput" placeholder="Search by client name, company, or email..." onkeyup="filterLeads()">
+                    </div>
+                    <select id="statusFilter" onchange="filterLeads()">
+                        <option value="ALL">All Statuses</option>
+                        <option value="New">New</option>
+                        <option value="Contacted">Contacted</option>
+                        <option value="Proposal Sent">Proposal Sent</option>
+                        <option value="Converted">Converted</option>
+                        <option value="Lost">Lost</option>
+                    </select>
+                    <select id="serviceFilter" onchange="filterLeads()">
+                        <option value="ALL">All Services</option>
+                        <option value="Web Development">Web Development</option>
+                        <option value="UI/UX Redesign">UI/UX Redesign</option>
+                        <option value="SEO & Marketing">SEO & Marketing</option>
+                        <option value="Custom CRM Solution">Custom CRM Solution</option>
+                    </select>
+                </div>
+
+                <!-- Leads Table -->
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Client & Company</th>
+                                <th>Requested Service</th>
+                                <th>Deal Value</th>
+                                <th>Priority</th>
+                                <th>Status</th>
+                                <th>Next Follow-Up</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="leadTableBody">
+                            <!-- Injected via JS -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- TAB 2: VISUAL ANALYTICS & GRAPHS -->
+            <div id="analyticsTab" class="tab-content">
+                <div class="charts-grid">
+                    <div class="chart-card">
+                        <h3>Lead Status Pipeline Distribution</h3>
+                        <div class="canvas-container">
+                            <canvas id="statusChart"></canvas>
+                        </div>
+                    </div>
+                    <div class="chart-card">
+                        <h3>Service Demand Breakdown</h3>
+                        <div class="canvas-container">
+                            <canvas id="serviceChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TAB 3: SERVICE CATALOG -->
+            <div id="servicesTab" class="tab-content">
+                <div class="catalog-header">
+                    <h2>Active Service Offerings & Pricing Packages</h2>
+                    <p>Manage the business packages you pitch to clients.</p>
+                </div>
+                <div class="services-grid" id="servicesGrid">
+                    <!-- Dynamic service cards -->
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Add/Edit Lead Modal -->
+    <div id="leadModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal()">&times;</span>
+            <h2 id="modalTitle">Register Business Lead</h2>
+            <form id="leadForm" onsubmit="saveLead(event)">
+                <input type="hidden" id="leadIndex">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Client Full Name</label>
+                        <input type="text" id="clientName" required placeholder="e.g. Rahul Sharma">
+                    </div>
+                    <div class="form-group">
+                        <label>Company Name</label>
+                        <input type="text" id="companyName" required placeholder="e.g. Sharma Enterprises">
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Email Address</label>
+                        <input type="email" id="clientEmail" required placeholder="rahul@sharma.com">
+                    </div>
+                    <div class="form-group">
+                        <label>Phone Number</label>
+                        <input type="text" id="clientPhone" required placeholder="+91 98765 43210">
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Requested Business Service</label>
+                        <select id="clientService">
+                            <option value="Web Development">Web Development</option>
+                            <option value="UI/UX Redesign">UI/UX Redesign</option>
+                            <option value="SEO & Marketing">SEO & Marketing</option>
+                            <option value="Custom CRM Solution">Custom CRM Solution</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Estimated Deal Value (₹)</label>
+                        <input type="number" id="dealValue" required placeholder="50000">
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Lead Source</label>
+                        <select id="clientSource">
+                            <option value="Website Contact Form">Website Contact Form</option>
+                            <option value="LinkedIn Outreach">LinkedIn Outreach</option>
+                            <option value="Direct Referral">Direct Referral</option>
+                            <option value="Google Business Profile">Google Business Profile</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Pipeline Status</label>
+                        <select id="clientStatus">
+                            <option value="New">New</option>
+                            <option value="Contacted">Contacted</option>
+                            <option value="Proposal Sent">Proposal Sent</option>
+                            <option value="Converted">Converted</option>
+                            <option value="Lost">Lost</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Priority Level</label>
+                        <select id="clientPriority">
+                            <option value="High">High Priority</option>
+                            <option value="Medium">Medium Priority</option>
+                            <option value="Low">Low Priority</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Next Follow-Up Date</label>
+                        <input type="date" id="followUpDate" required>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Business Notes & Action Items</label>
+                    <textarea id="clientNotes" placeholder="Client requirements, budget discussions, follow-up notes..."></textarea>
+                </div>
+                <button type="submit" class="btn-primary full-width">Save Business Lead</button>
+            </form>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
